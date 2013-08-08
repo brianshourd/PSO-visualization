@@ -7,26 +7,31 @@
  *
  * Dependencies: Underscore.js, Vect
  */
-var PSO = (function(_, V) {
+var PSO = (function(_, V, existy) {
     // Object to return
     var pso = {};
 
-    var particles = [];
-    var best = null;
-    var optimize = null;
-    var particleUpdater = null;
-    var iteration = 0;
-
-    // setFunction takes in a function fun to optimize. fun should be a
-    // function which takes two arguments - an x-value and a y-value -
-    // and returns a number.
-    function setOptimize(fun) {
-        optimize = function(v) {
-            return fun(v[0], v[1]);
+    // Defines the structure of particles
+    function newParticle(pos, vel, optimize) {
+        return {
+            pos: pos,
+            vel: vel,
+            best: {
+                loc: pos,
+                val: optimize(pos)
+            }
         };
     }
 
-    var setUpdater = (function() {
+    // Iterate over the particles, finding the best one
+    // The `best` argument is optional
+    function calculateBest(particles, best) {
+        return _.reduce(particles, function(best, part) {
+            return best.val < part.best.val ? best : part.best;
+        }, best || particles[0].best);
+    }
+
+    var Updater = (function() {
         var SQUASH = 0.75;
         var randomScaler = function(scalar) {
             return function(x) {
@@ -41,110 +46,106 @@ var PSO = (function(_, V) {
                 var center = Vect.lcom(0.5, 0.5)(v, w);
                 var radius = Vect.magnitude(Vect.subtract(w, v)) / 2;
                 var rand = Vect.randomInSphere(v.length, center, radius);
-                //console.log(["v is", v, '\nw is', w, '\ncenter is', center, '\nradius is', radius, '\nrand is', rand].join(' '));
                 return Vect.lcom(scalar*SQUASH, -scalar*SQUASH)(rand, v);
             }
         };
-        return function(chi, c1, c2, between) {
+        var updater = function(between) {
             between = between || "box";
-            particleUpdater = function(particle, best) {
-                particle.pos = V.add(particle.pos, particle.vel);
+            return function(chi, c1, c2) {
+                return function(particle, best, optimize) {
+                    particle.pos = V.add(particle.pos, particle.vel);
 
-                //console.log("trying sphere:");
-                var localVel = betweenOptions[between](particle.pos, particle.best.loc, c1);
-                //console.log(["result is", localVel].join(' '));
-                var globalVel = betweenOptions[between](particle.pos, best.loc, c2);
-                particle.vel = V.vectorize(function(x, y, z) { 
-                    return chi * (x + y + z); 
-                })(particle.vel, localVel, globalVel);
-                //console.log(particle.vel);
+                    var localVel = betweenOptions[between](particle.pos, particle.best.loc, c1);
+                    var globalVel = betweenOptions[between](particle.pos, best.loc, c2);
+                    particle.vel = V.vectorize(function(x, y, z) { 
+                        return chi * (x + y + z); 
+                    })(particle.vel, localVel, globalVel);
 
-                var val = optimize(particle.pos);
-                if (val < particle.best.val) { 
-                    particle.best.loc = particle.pos;
-                    particle.best.val = val;
-                }
+                    var val = optimize(particle.pos);
+                    if (val < particle.best.val) { 
+                        particle.best.loc = particle.pos;
+                        particle.best.val = val;
+                    }
+                };
             };
-        }
+        };
+        return {
+            getBoxStyle: updater("box"),
+            getBallStyle: updater("ball"),
+            standard: (updater("box"))(0.72984, 2.05, 2.05)
+        };
     }());
 
-    function createParticle(pos, vel) {
-        return {
-            pos: pos,
-            vel: vel,
-            best: {
-                loc: pos,
-                val: optimize(pos)
-            }
+    function Swarm(config) {
+        // Private variables
+        var particles = [];     // All particles
+        var best = null;        // Best particle so far
+        var optimize = null;    // The function to optimize
+        var particleUpdater = null;  // Updating function to use
+        var iteration = 0;      // Current iteration
+
+        // Make the optimizer work at the vector level
+        optimize = function(v) { return config.fun(v[0], v[1]); }
+
+        // Initialize the particles
+        particles = _.map(_.range(config.number), function() {
+                var pos = [Math.random() * (config.xmax - config.xmin) + config.xmin,
+                           Math.random() * (config.ymax - config.ymin) + config.ymin];
+                var vel;
+                if (config.velocityInitializer) { vel = config.velocityInitializer(); }
+                else { vel = V.create(0, 0); }
+                return newParticle(pos, vel, optimize);
+            });
+        
+        // Find the best
+        best = calculateBest(particles);
+
+        // Set the updater
+        if (existy(config.updater)) { particleUpdater = config.updater; }
+        else { particleUpdater = Updater.standard; }
+        console.log(particleUpdater);
+        console.log(Updater);
+
+        this.update = function() {
+            _.map(particles, function(part) {
+                particleUpdater(part, best, optimize);
+            });
+            best = calculateBest(particles);
+            iteration++;
         };
-    }
 
-    function randomParticleGenerator(xmin, ymin, xmax, ymax, velocityInitializer) {
-        return function() {
-            var vel;
-            if (velocityInitializer) { vel = velocityInitializer(); }
-            else { vel = V.create(0, 0); }
-            return createParticle(V.create(Math.random() * (xmax - xmin) + xmin, Math.random() * (ymax - ymin) + ymin),
-                                  vel);
+        this.getParticles = function() {
+            return _.reduce(particles, function(memo, part) {
+                memo.push({
+                    pos: _.clone(part.pos),
+                    vel: _.clone(part.vel),
+                    best: {
+                        loc: _.clone(part.best.loc),
+                        val: _.clone(part.best.val)
+                    }
+                });
+                return memo;
+            }, []);
         };
-    }
 
-    function randomSwarm(number, xmin, ymin, xmax, ymax, velocityInitializer) {
-        particles = _.map(_.range(number), randomParticleGenerator(xmin, ymin, xmax, ymax, velocityInitializer));
-        calculateBest();
-    }
+        this.getBest = function() {
+            return {
+                loc: _.clone(best.loc),
+                val: _.clone(best.val)
+            };
+        };
 
-    function calculateBest() {
-        best = _.reduce(particles, function(best, part) {
-            return best.val < part.best.val ? best : part.best;
-        }, best || particles[0].best);
-    }
+        this.getIteration = function() {
+            return iteration;
+        };
+
+        return this;
+    };
 
     // ## Public Methods
-
-    pso.create = function(fun, number, xmin, ymin, xmax, ymax, velocityInitializer) {
-        setOptimize(fun);
-        randomSwarm(number, xmin, ymin, xmax, ymax, velocityInitializer);
-        setUpdater(0.72984, 2.05, 2.05, "box");
-    };
-
-    pso.update = function() {
-        _.map(particles, function(part) {
-            particleUpdater(part, best);
-        });
-        calculateBest();
-        iteration++;
-    };
-
-    pso.setUpdateMethod = function(choice) {
-        if (choice == "box" || choice == "ball") {
-            setUpdater(0.72984, 2.05, 2.05, choice);
-        }
-    };
-
-    pso.getParticles = function() {
-        return _.reduce(particles, function(memo, part) {
-            memo.push({
-                pos: _.clone(part.pos),
-                vel: _.clone(part.vel),
-                best: {
-                    loc: _.clone(part.best.loc),
-                    val: _.clone(part.best.val)
-                }
-            });
-            return memo;
-        }, []);
-    };
-
-    pso.getBest = function() {
-        return {
-            loc: _.clone(best.loc),
-            val: _.clone(best.val)
-        };
-    };
-
-    pso.getIteration = function() {
-        return iteration;
+    
+    pso.createSwarm = function(config) {
+        return new Swarm(config);
     };
 
     pso.test = function() {
@@ -154,8 +155,10 @@ var PSO = (function(_, V) {
         });
     };
 
+    pso.updater = Updater;
+
     return pso;
-}(_, Vect));
+}(_, Vect, Util.existy));
 
 
 
