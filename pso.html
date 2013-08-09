@@ -58,7 +58,7 @@
               </div>
             </div>
 
-            <select>
+            <select id="functionSelect">
               <option value="rast">Rastrigin’s function</option>
               <option value="sqr">De Jong's function</option>
               <option value="rose">Rosenbrock's valley</option>
@@ -96,24 +96,34 @@
               </div>
             </div>
 
-            <div class="input-group">
-              <span class="input-group-addon">$\chi$</span>
-              <input type="text" class="form-control">
-            </div>
+            <div id="paramsInput">
+              <div class="input-group">
+                <span class="input-group-addon">$\chi$</span>
+                <input type="text" class="form-control" name="chi">
+              </div>
 
-            <div class="input-group">
-              <span class="input-group-addon">$c_1$</span>
-              <input type="text" class="form-control">
-            </div>
+              <div class="input-group">
+                <span class="input-group-addon">$c_1$</span>
+                <input type="text" class="form-control" name="c1">
+              </div>
 
-            <div class="input-group">
-              <span class="input-group-addon">$c_2$</span>
-              <input type="text" class="form-control">
-            </div>
+              <div class="input-group">
+                <span class="input-group-addon">$c_2$</span>
+                <input type="text" class="form-control" name="c2">
+              </div>
 
-            <div class="input-group">
-              <span class="input-group-addon">$n$</span>
-              <input type="text" class="form-control">
+              <div class="input-group">
+                <span class="input-group-addon">$n$</span>
+                <input type="text" class="form-control" name="n">
+              </div>
+            </div>
+          </div>
+
+          <div id="buttons">
+            <div class="btn-group">
+              <button type="button" class="btn btn-default" name="stop">Stop</button>
+              <button type="button" class="btn btn-default" name="reset">Reset</button>
+              <button type="button" class="btn btn-default" name="start">Start</button>
             </div>
           </div>
         </div>
@@ -152,12 +162,12 @@
               </div>
             </div>
 
-            <div class="checkbox">
+            <div class="checkbox" id="optionsInput">
               <label style="display: block">
-                <input type="checkbox"> Draw function in background
+                <input type="checkbox" value="drawbg"> Draw function in background
               </label>
               <label style="display: block">
-                <input type="checkbox"> Draw known minimum (red)
+                <input type="checkbox" value="drawmin"> Draw known minimum (red)
               </label>
               <label style="display: block">
                 <input type="checkbox" value="drawgmin"> Draw global minimum (green)
@@ -184,6 +194,6 @@
     <script type="text/javascript" src="pso.js"></script>
     <script type="text/javascript" src="tween.js"></script>
     <script type="text/javascript" src="viewport.js"></script>
-    <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript" src="run.js"></script>
   </body>
 </html>

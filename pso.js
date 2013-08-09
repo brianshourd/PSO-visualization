@@ -103,8 +103,6 @@ var PSO = (function(_, V, existy) {
         // Set the updater
         if (existy(config.updater)) { particleUpdater = config.updater; }
         else { particleUpdater = Updater.standard; }
-        console.log(particleUpdater);
-        console.log(Updater);
 
         this.update = function() {
             _.map(particles, function(part) {
