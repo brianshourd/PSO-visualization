@@ -3,10 +3,179 @@
   <head>
     <meta charset="utf-8">
     <title>Particle Swarm Optimization</title>
+
+    <!-- Configure and import MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- End MathJax -->
+
+    <!-- Bootstrap -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+    <!-- End Bootstrap -->
+
+    <link rel="stylesheet" href="pso.css">
   </head>
 
   <body>
-    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <div class="container">
+      <div id="header" class="row">
+        <div class="col-lg-12">
+          <h1>Particle Swarm Optimization Visualization</h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- left side -->
+        <div class="col-lg-3">
+          <div id="function">
+            <h2>Optimization Function [<a data-toggle="modal" href="#functionModal">?</a>]</h2>
+
+            <div class="modal" id="functionModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Optimization Function</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>Select the function to be optimized. All functions are pulled from <a href="http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf">"Test functions for optimization needs"</a> by Marcin Molga and Czesław Smutnicki. Options are:</p>
+                    <ol>
+                      <li>De Jong's function:
+                      $$f(x) = x^2 + y^2$$</li>
+                      <li>Rosenbrock's valley:
+                      $$f(x) = 100(y - x^2)^2 + (1 - x)^2$$</li>
+                      <li>Rastrigin's function:
+                      $$f(x) = 20 + x^2 - 10 \cos(2 \pi x) + y^2 - 10 \cos(2 \pi y)$$</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <select>
+              <option value="rast">Rastrigin’s function</option>
+              <option value="sqr">De Jong's function</option>
+              <option value="rose">Rosenbrock's valley</option>
+            </select>
+          </div>
+
+          <div id="parameters">
+            <h2>Parameters [<a data-toggle="modal" href="#parametersModal">?</a>]</h2>
+
+            <div class="modal" id="parametersModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Parameters</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>These are the parameters from the paper:</p>
+
+                    <p>Bratton, D.; Kennedy, J., "Defining a Standard for Particle Swarm Optimization," Swarm Intelligence Symposium, 2007. SIS 2007. IEEE , vol., no., pp.120,127, 1-5 April 2007<br>
+                    URL: <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4223164&isnumber=4223144">http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=4223164&isnumber=4223144</a></p>
+
+                    <ul>
+                      <li>$c_1$ is the tendancy of a particle to favor the global mininimum</li>
+                      <li>$c_2$ is the tendancy of a particle to favor it's personal minimum</li>
+                      <li>$\chi$ is the constriction factor, corresponding loosely to the tendancy of a particle to resist changing direction</li>
+                      <li>$n$ is the number of particles</li>
+                    </ul>
+
+                    <p>Note that Kennedy and Bratton recommend using
+                    $$\chi = \frac{2}{\left| 2 - \phi - \sqrt{\phi^2 - 4\phi} \right|},$$
+                    where $\phi = c_1 + c_2$. They also recommend that $\phi > 4$, and therefore assign default parameters of $c_1 = c_2 = 2.05$, $\chi = 0.72984$.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <span class="input-group-addon">$\chi$</span>
+              <input type="text" class="form-control">
+            </div>
+
+            <div class="input-group">
+              <span class="input-group-addon">$c_1$</span>
+              <input type="text" class="form-control">
+            </div>
+
+            <div class="input-group">
+              <span class="input-group-addon">$c_2$</span>
+              <input type="text" class="form-control">
+            </div>
+
+            <div class="input-group">
+              <span class="input-group-addon">$n$</span>
+              <input type="text" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- canvas -->
+        <div class="col-lg-6">
+          <canvas id="viewport"></canvas>
+        </div>
+
+        <!-- right side -->
+        <div class="col-lg-3">
+          <div id="options">
+            <h2>Options [<a data-toggle="modal" href="#optionsModal">?</a>]</h2>
+
+            <div class="modal" id="optionsModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Options</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>Several options are available:</p>
+
+                    <ul>
+                      <li><emph>Draw function in background:</emph> determines whether or not to draw a representation of the function to be optimized in the background of the particle. Dark blue corresponds to lower values, white to higher values.</li>
+                      <li><emph>Draw known minimum:</emph> each of these functions has a known minimum value, which can be represented as a red dot.</li>
+                      <li><emph>Draw global minimum:</emph> the swarm has at each point found a minimum, called the global minimum, which can be drawn as a green dot.</li>
+                      <li><emph>Draw local minima:</emph> each particle also has its own minimum found so far, which can be drawn as a yellow dot.</li>
+                      <li><emph>Draw particles:</emph> the particles may or may not be shown.</li>
+                      <li><emph>Use "ball method":</emph> this is an experiment of my own devising. One of the commonly cited problems with particle swarm optimization is the fact that it is dependent on the orientation of a function to the axes. I've developed a new updating method which fixes this - however it does not yet perform satisfactorily. More tests need to be done.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkbox">
+              <label style="display: block">
+                <input type="checkbox"> Draw function in background
+              </label>
+              <label style="display: block">
+                <input type="checkbox"> Draw known minimum (red)
+              </label>
+              <label style="display: block">
+                <input type="checkbox" value="drawgmin"> Draw global minimum (green)
+              </label>
+              <label style="display: block">
+                <input type="checkbox" value="drawlmin"> Draw local minima (yellow)
+              </label>
+              <label style="display: block">
+                <input type="checkbox" value="drawparts"> Draw particles (black)
+              </label>
+              <label style="display: block">
+                <input type="checkbox" value="ballmethod"> Use "ball method" (experimental)
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- .container -->
 
     <script type="text/javascript" src="underscore.js"></script>
     <script type="text/javascript" src="checker.js"></script>
