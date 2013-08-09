@@ -22,7 +22,7 @@ rast.best = [0, 0];
 rast.limits = [-5, -5, 5, 5];
 
 // Choose a function
-var fun = sqr;
+var fun = rast;
 
 // Set up viewport
 Viewport.setCanvas(canvas);
@@ -37,7 +37,8 @@ var swarm = PSO.createSwarm({
     ymin: fun.limits[1],
     xmax: fun.limits[2],
     ymax: fun.limits[3],
-    velocityInitializer: function() { return Vect.randomInSphere(2, null, 5); }
+    velocityInitializer: function() { return Vect.randomInSphere(2, null, 5); },
+    updater: PSO.updater.getBallStyle(0.8, 2.05, 2.05)
 });
 
 var parts = null;
