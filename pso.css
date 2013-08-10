@@ -9,3 +9,11 @@ canvas {
 #header {
     text-align: center;
 }
+#footer {
+    text-align: center;
+}
+#clickStart {
+    position: relative;
+    margin: 1em auto;
+    text-align: center;
+}
