@@ -1,7 +1,32 @@
-// Global variables
-var App = (function() {
-    var FPS = 30;
+// Shim for requestAnimationFrame
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+// MIT license
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+    || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+    if (!window.requestAnimationFrame)
+    window.requestAnimationFrame = function(callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+            timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+if (!window.cancelAnimationFrame)
+    window.cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+    };
+}());
 
+var App = (function() {
     // Default options
     var config = {
         speed: 3,
@@ -68,6 +93,7 @@ var App = (function() {
         $('#liveOptionsInput input').each(function() {
             config.liveOptions[$(this).val()] = $(this).prop('checked');
         });
+        console.log(config.liveOptions);
     };
 
     var readForm = function() {
@@ -180,22 +206,27 @@ var App = (function() {
         particleInterval = setInterval(function() {
             nextParticles();
         }, 1000 / config.speed);
-        drawInterval = setInterval(function() {
+        var draw = function() {
             Viewport.clear();
             if (config.liveOptions['drawbg']) { Viewport.drawBG(); }
             _.map(tweens, function(tween) {
-                if (config.liveOptions['drawlmin']) { Viewport.drawBall(tween.getCurrent().best.loc, 10, 'yellow'); }
-                if (config.liveOptions['drawparts']) { Viewport.drawBall(tween.getPosition(), 10, 'black'); }
+                var pos = tween.getPosition();
+                var best = tween.getCurrent().best.loc;
+                if (config.liveOptions['drawlmin']) { Viewport.drawBall(best, 10, 'yellow'); }
+                if (config.liveOptions['drawparts']) { Viewport.drawBall(pos, 10, 'black'); }
             });
             if (config.liveOptions['drawgmin']) { Viewport.drawBall(goalTween.getPosition(), 10, 'green'); }
             if (config.liveOptions['drawmin']) { Viewport.drawBall(functions[config.fun].best, 10, 'red'); }
             Viewport.drawText(swarm.getIteration());
-        }, 1000 / FPS);
+            // Reset
+            drawInterval = requestAnimationFrame(draw);
+        };
+        drawInterval = requestAnimationFrame(draw);
     };
 
     var stop = function() {
         clearInterval(particleInterval);
-        clearInterval(drawInterval);
+        cancelAnimationFrame(drawInterval);
     };
 
     return {
