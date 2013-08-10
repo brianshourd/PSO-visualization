@@ -10,15 +10,17 @@ var App = (function() {
             chi: 0.72984,
             c1: 2.05,
             c2: 2.05,
-            n: 10
+            n: 10,
         },
         options: {
+            ballmethod: false
+        },
+        liveOptions: {
             drawbg: true,
             drawmin: true,
             drawgmin: true,
             drawlmin: true,
             drawparts: true,
-            ballmethod: false
         }
     };
 
@@ -62,6 +64,12 @@ var App = (function() {
         };
     }());
 
+    var readLiveOptions = function() {
+        $('#liveOptionsInput input').each(function() {
+            config.liveOptions[$(this).val()] = $(this).prop('checked');
+        });
+    };
+
     var readForm = function() {
         // Set all of the options
         // Set function
@@ -75,16 +83,29 @@ var App = (function() {
         $('#optionsInput input').each(function() {
             config.options[$(this).val()] = $(this).prop('checked');
         });
+        // Set live options
+        readLiveOptions();
     };
 
-    var resetForm = function() {
-        $('select#functionSelect').val(config.fun);
+    var resetForm = function(hardReset) {
+        config.params = {
+            chi: 0.72984,
+            c1: 2.05,
+            c2: 2.05,
+            n: 10
+        };
         $('#paramsInput input').each(function() { 
             $(this).val(config.params[$(this).prop('name')]);
         });
-        $('#optionsInput input').each(function() {
-            $(this).prop('checked', config.options[$(this).val()]);
-        });
+        if (hardReset) {
+            $('select#functionSelect').val(config.fun);
+            $('#optionsInput input').each(function() {
+                $(this).prop('checked', config.options[$(this).val()]);
+            });
+            $('#liveOptionsInput input').each(function() {
+                $(this).prop('checked', config.liveOptions[$(this).val()]);
+            });
+        }
     };
 
     var resetCanvas = function() {
@@ -147,10 +168,8 @@ var App = (function() {
 
         // Set up viewport
         Viewport.setView.apply(null, functions[config.fun].limits);
-        if (config.options['drawbg']) {
-            Viewport.drawText("Preparing Background");
-            Viewport.setBG(functions[config.fun]);
-        }
+        Viewport.drawText("Preparing Background");
+        Viewport.setBG(functions[config.fun]);
         Viewport.clear();
         Viewport.drawText("Creating Swarm");
         createSwarm();
@@ -163,24 +182,27 @@ var App = (function() {
         }, 1000 / config.speed);
         drawInterval = setInterval(function() {
             Viewport.clear();
-            if (config.options['drawbg']) { Viewport.drawBG(); }
+            if (config.liveOptions['drawbg']) { Viewport.drawBG(); }
             _.map(tweens, function(tween) {
-                if (config.options['drawlmin']) { Viewport.drawBall(tween.getCurrent().best.loc, 10, 'yellow'); }
-                if (config.options['drawparts']) { Viewport.drawBall(tween.getPosition(), 10, 'black'); }
+                if (config.liveOptions['drawlmin']) { Viewport.drawBall(tween.getCurrent().best.loc, 10, 'yellow'); }
+                if (config.liveOptions['drawparts']) { Viewport.drawBall(tween.getPosition(), 10, 'black'); }
             });
-            if (config.options['drawgmin']) { Viewport.drawBall(goalTween.getPosition(), 10, 'green'); }
-            if (config.options['drawmin']) { Viewport.drawBall(functions[config.fun].best, 10, 'red'); }
+            if (config.liveOptions['drawgmin']) { Viewport.drawBall(goalTween.getPosition(), 10, 'green'); }
+            if (config.liveOptions['drawmin']) { Viewport.drawBall(functions[config.fun].best, 10, 'red'); }
             Viewport.drawText(swarm.getIteration());
         }, 1000 / FPS);
     };
 
+    var stop = function() {
+        clearInterval(particleInterval);
+        clearInterval(drawInterval);
+    };
+
     return {
         start: start,
-        /*
         stop: stop,
-        restart: restart,
-        */
-        resetForm: resetForm
+        resetForm: resetForm,
+        readLiveOptions: readLiveOptions
     };
 }());
 
@@ -191,9 +213,16 @@ $(document).ready(function() {
     });
     buttons.find('button[name="reset"]').on('click', function() {
         App.resetForm();
+    });
+    buttons.find('button[name="stop"]').on('click', function() {
+        console.log("stop!");
         App.stop();
     });
+    // Set live options
+    $('#liveOptionsInput input:checkbox').on('change', function() {
+        App.readLiveOptions();
+    });
 
-    App.resetForm();
+    App.resetForm(true);
 });
 

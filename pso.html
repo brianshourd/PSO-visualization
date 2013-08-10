@@ -91,6 +91,8 @@
                     <p>Note that Kennedy and Bratton recommend using
                     $$\chi = \frac{2}{\left| 2 - \phi - \sqrt{\phi^2 - 4\phi} \right|},$$
                     where $\phi = c_1 + c_2$. They also recommend that $\phi > 4$, and therefore assign default parameters of $c_1 = c_2 = 2.05$, $\chi = 0.72984$.</p>
+
+                    <p>The <emph>use "ball method"</emph> option is an experiment of my own devising. One of the commonly cited problems with particle swarm optimization is the fact that it is dependent on the orientation of a function to the axes. I've developed a new updating method which fixes this - however it does not yet perform satisfactorily. More tests need to be done.</p>
                   </div>
                 </div>
               </div>
@@ -115,6 +117,12 @@
               <div class="input-group">
                 <span class="input-group-addon">$n$</span>
                 <input type="text" class="form-control" name="n">
+              </div>
+
+              <div id="optionsInput" class="checkbox">
+                <label style="display: block">
+                  <input type="checkbox" value="ballmethod"> Use "ball method" (experimental)
+                </label>
               </div>
             </div>
           </div>
@@ -154,15 +162,13 @@
                       <li><emph>Draw global minimum:</emph> the swarm has at each point found a minimum, called the global minimum, which can be drawn as a green dot.</li>
                       <li><emph>Draw local minima:</emph> each particle also has its own minimum found so far, which can be drawn as a yellow dot.</li>
                       <li><emph>Draw particles:</emph> the particles may or may not be shown.</li>
-                      <li><emph>Use "ball method":</emph> this is an experiment of my own devising. One of the commonly cited problems with particle swarm optimization is the fact that it is dependent on the orientation of a function to the axes. I've developed a new updating method which fixes this - however it does not yet perform satisfactorily. More tests need to be done.
-                      </li>
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="checkbox" id="optionsInput">
+            <div class="checkbox" id="liveOptionsInput">
               <label style="display: block">
                 <input type="checkbox" value="drawbg"> Draw function in background
               </label>
@@ -178,9 +184,7 @@
               <label style="display: block">
                 <input type="checkbox" value="drawparts"> Draw particles (black)
               </label>
-              <label style="display: block">
-                <input type="checkbox" value="ballmethod"> Use "ball method" (experimental)
-              </label>
+              <p>TO DO: Make these live, move this one to other side</p>
             </div>
           </div>
         </div>
