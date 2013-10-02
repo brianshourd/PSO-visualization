@@ -5,6 +5,7 @@ require.config({
         'underscore': 'lib/underscore',
         'jquery': 'lib/jquery-2.0.3.min',
         'requestAnimationFrame': 'lib/requestAnimationFrame',
+        'fastclick': 'lib/fastclick',
         
         // My modules
         'app': 'app/app',
@@ -23,10 +24,14 @@ require.config({
 
 require([
     'requestAnimationFrame',
+    'fastclick',
     'app'
-    ], function(RAF, App) {
+    ], function(RAF, FastClick, App) {
     // Setup the requestAnimationFrame shim
     RAF.initialize();
+
+    // Setup fastclick for mobile
+    FastClick.attach(document.body);
 
     // Define behaviors
     var buttons = $('#buttons');
