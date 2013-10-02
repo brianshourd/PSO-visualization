@@ -43,10 +43,10 @@ define(['underscore', 'vect', 'util'], function(_, V, Util) {
                 return _.map(V.subtract(w, v), randomScaler(scalar));
             },
             ball: function(v, w, scalar) {
-                var center = Vect.lcom(0.5, 0.5)(v, w);
-                var radius = Vect.magnitude(Vect.subtract(w, v)) / 2;
-                var rand = Vect.randomInSphere(v.length, center, radius);
-                return Vect.lcom(scalar*SQUASH, -scalar*SQUASH)(rand, v);
+                var center = V.lcom(0.5, 0.5)(v, w);
+                var radius = V.magnitude(V.subtract(w, v)) / 2;
+                var rand = V.randomInSphere(v.length, center, radius);
+                return V.lcom(scalar*SQUASH, -scalar*SQUASH)(rand, v);
             }
         };
         var updater = function(between) {

@@ -17,3 +17,20 @@ canvas {
     top: 8em;
     text-align: center;
 }
+ul {
+    padding-left: 0;
+}
+ul li {
+    list-style: none;
+    padding: 5px 10px;
+}
+#buttons {
+    margin: auto;
+}
+
+ul.inputList label {
+    text-align: right;
+}
+ul.inputList input {
+    width: 100%;
+}

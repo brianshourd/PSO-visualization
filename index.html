@@ -10,134 +10,200 @@
     </script>
     <script type="text/javascript"
       src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
-    <!-- End MathJax -->
+      </script>
+      <!-- End MathJax -->
 
-    <!-- Bootstrap -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
-    <!-- End Bootstrap -->
+      <!-- CSS -->
+      <link rel="stylesheet" type="text/css" href="css/toast.css">
+      <link rel="stylesheet" type="text/css" href="css/topcoat-mobile-light.min.css">
+      <link rel="stylesheet" type="text/css" href="css/pso.css">
 
-    <link rel="stylesheet" href="css/pso.css">
-    <!-- Load scripts with require -->
-    <script data-main="js/run.js" src="js/lib/require.js"></script>
-  </head>
+      <!-- Load scripts with require -->
+      <script data-main="js/run.js" src="js/lib/require.js"></script>
+    </head>
 
-  <body>
-    <div class="container">
-      <div id="header" class="row">
-        <div class="col-lg-12">
-          <h1>Particle Swarm Optimization Visualization</h1>
-          <h2><a data-toggle="modal" href="#explainModal">What am I looking at?</a></h2>
-        </div>
-      </div>
-
-      <div class="row">
-        <!-- left side -->
-        <div class="col-lg-3">
-          <div id="function">
-            <h2>Optimization Function [<a data-toggle="modal" href="#functionModal">?</a>]</h2>
-
-            <select id="functionSelect">
-              <option value="rast">Rastrigin’s function</option>
-              <option value="sqr">De Jong's function</option>
-              <option value="rose">Rosenbrock's valley</option>
-            </select>
+    <body>
+      <div class="container">
+        <div class="grid">
+          <!-- Header -->
+          <div class="unit span-grid" id="header">
+            <h1>Particle Swarm Optimization Visualization</h1>
+            <h2><a href="#explainModal">What am I looking at?</a></h2>
           </div>
 
-          <div id="parameters">
-            <h2>Parameters [<a data-toggle="modal" href="#parametersModal">?</a>]</h2>
+          <!-- Left options -->
+          <div class="unit one-of-four" id="leftCol">
+            <div id="function">
+              <h2>Optimization Function [<a href="#functionModal">?</a>]</h2>
 
-            <div id="paramsInput">
-              <div class="input-group">
-                <span class="input-group-addon">$\chi$</span>
-                <input type="text" class="form-control" name="chi">
-              </div>
-
-              <div class="input-group">
-                <span class="input-group-addon">$c_1$</span>
-                <input type="text" class="form-control" name="c1">
-              </div>
-
-              <div class="input-group">
-                <span class="input-group-addon">$c_2$</span>
-                <input type="text" class="form-control" name="c2">
-              </div>
-
-              <div class="input-group">
-                <span class="input-group-addon">$n$</span>
-                <input type="text" class="form-control" name="n">
-              </div>
-
-              <div id="optionsInput" class="checkbox">
-                <label style="display: block">
-                  <input type="checkbox" value="ballmethod"> Use "ball method" (experimental)
+              <ul id="functionRadios">
+                <li>
+                <label class="topcoat-radio-button">
+                  <input type="radio" name="functionSelect" value="sqr">
+                  <div class="topcoat-radio-button__checkmark"></div>
+                  De Jong's function
                 </label>
+                </li>
+
+                <li>
+                <label class="topcoat-radio-button">
+                  <input type="radio" name="functionSelect" value="rose">
+                  <div class="topcoat-radio-button__checkmark"></div>
+                  Rosenbrock's valley
+                </label>
+                </li>
+
+                <li>
+                <label class="topcoat-radio-button">
+                  <input type="radio" name="functionSelect" value="rast">
+                  <div class="topcoat-radio-button__checkmark"></div>
+                  Rastrigrin's function
+                </label>
+                </li>
+              </ul>
+            </div>
+
+            <div id="parameters">
+              <h2>Parameters [<a href="#parametersModal">?</a>]</h2>
+
+              <div id="paramsInput">
+                <ul class="inputList">
+                  <li>
+                  <div class="grid">
+                    <div class="unit one-of-five">
+                      <label for="chi">$\chi$</label>
+                    </div>
+                    <div class="unit three-of-four">
+                      <input type="text" class="topcoat-text-input" name="chi">
+                    </div>
+                  </div>
+                  </li>
+
+                  <li>
+                  <div class="grid">
+                    <div class="unit one-of-five">
+                      <label for="c1">$c_1$</label>
+                    </div>
+                    <div class="unit three-of-four">
+                      <input type="text" class="topcoat-text-input" name="c1">
+                    </div>
+                  </div>
+                  </li>
+
+                  <li>
+                  <div class="grid">
+                    <div class="unit one-of-five">
+                      <label for="c2">$c_2$</label>
+                    </div>
+                    <div class="unit three-of-four">
+                      <input type="text" class="topcoat-text-input" name="c2">
+                    </div>
+                  </div>
+                  </li>
+
+                  <li>
+                  <div class="grid">
+                    <div class="unit one-of-five">
+                      <label for="n">$n$</label>
+                    </div>
+                    <div class="unit three-of-four">
+                      <input type="text" class="topcoat-text-input" name="n">
+                    </div>
+                  </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div id="optionsInput">
+                <ul>
+                  <li>
+                  <label class="topcoat-checkbox" style="display: block">
+                    <input type="checkbox" value="ballmethod">
+                    <div class="topcoat-checkbox__checkmark"></div>
+                    Use "ball method" (experimental)
+                  </label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- canvas -->
+          <div class="unit one-of-two" id="centerCol">
+            <div id="clickStart">
+              <h2>Click 'Start' to begin</h2>
+            </div>
+            <canvas id="viewport"></canvas>
+            <div id="buttons" class="topcoat-button-bar">
+              <div class="topcoat-button-bar__item">
+                <button class="topcoat-button-bar__button--large" name="stop">Stop</button>
+              </div>
+              <div class="topcoat-button-bar__item">
+                <button class="topcoat-button-bar__button--large" name="reset">Reset</button>
+              </div>
+              <div class="topcoat-button-bar__item">
+                <button class="topcoat-button-bar__button--large" name="start">Start</button>
               </div>
             </div>
           </div>
 
-          <div id="buttons">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default" name="stop">Stop</button>
-              <button type="button" class="btn btn-default" name="reset">Reset</button>
-              <button type="button" class="btn btn-default" name="start">Start</button>
-            </div>
-          </div>
-        </div>
+          <!-- Right options -->
+          <div class="unit one-of-four" id="rightCol">
+            <div id="options">
+              <h2>Live Options [<a href="#optionsModal">?</a>]</h2>
 
-        <!-- canvas -->
-        <div class="col-lg-6">
-          <div id="clickStart">
-            <h2>Click 'Start' to begin</h2>
-          </div>
-          <canvas id="viewport"></canvas>
-        </div>
+              <ul id="liveOptionsInput">
+                <li>
+                <label class="topcoat-checkbox" style="display: block">
+                  <input type="checkbox" value="drawbg">
+                  <div class="topcoat-checkbox__checkmark"></div>
+                  Draw function in background
+                </label>
+                </li>
 
-        <!-- right side -->
-        <div class="col-lg-3">
-          <div id="options">
-            <h2>Options [<a data-toggle="modal" href="#optionsModal">?</a>]</h2>
+                <li>
+                <label class="topcoat-checkbox" style="display: block">
+                  <input type="checkbox" value="drawmin"> 
+                  <div class="topcoat-checkbox__checkmark"></div>
+                  Draw known minimum (red)
+                </label>
+                </li>
 
-            <div class="checkbox" id="liveOptionsInput">
-              <label style="display: block">
-                <input type="checkbox" value="drawbg"> Draw function in background
-              </label>
-              <label style="display: block">
-                <input type="checkbox" value="drawmin"> Draw known minimum (red)
-              </label>
-              <label style="display: block">
-                <input type="checkbox" value="drawgmin"> Draw global minimum (green)
-              </label>
-              <label style="display: block">
-                <input type="checkbox" value="drawlmin"> Draw local minima (yellow)
-              </label>
-              <label style="display: block">
-                <input type="checkbox" value="drawparts"> Draw particles (black)
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+                <li>
+                <label class="topcoat-checkbox" style="display: block">
+                  <input type="checkbox" value="drawgmin"> 
+                  <div class="topcoat-checkbox__checkmark"></div>
+                  Draw global minimum (green)
+                </label>
+                </li>
 
-      <div id="footer" class="row">
-        <div class="col-lg-3"></div>
-        <div class="col-lg-6">
-          <p>Project created by <a href="http://brianshourd.com">Brian Shourd</a> as an experiment (and is a work in progress). <a href="https://github.com/brianshourd/PSO-visualization/">View/Fork the code on Github</a>.</p>
-        </div>
-        <div class="col-lg-3"></div>
-      </div>
+                <li>
+                <label class="topcoat-checkbox" style="display: block">
+                  <input type="checkbox" value="drawlmin"> 
+                  <div class="topcoat-checkbox__checkmark"></div>
+                  Draw local minima (yellow)
+                </label>
+                </li>
 
-      <div id="modals">
-        <div class="modal" id="explainModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Particle Swarm Optimization</h4>
+                <li>
+                <label class="topcoat-checkbox" style="display: block">
+                  <input type="checkbox" value="drawparts"> 
+                  <div class="topcoat-checkbox__checkmark"></div>
+                  Draw particles (black)
+                </label>
+                </li>
               </div>
-              <div class="modal-body">
+            </div>
+
+            <!-- Footer -->
+            <div class="unit span-grid" id="footer">
+              <p>Project created by <a href="http://brianshourd.com">Brian Shourd</a> as an experiment (and is a work in progress). <a href="https://github.com/brianshourd/PSO-visualization/">View/Fork the code on Github</a>.</p>
+            </div>
+
+            <div class="unit span-grid" id="modals">
+              <div class="modal" id="explainModal">
+                <h3>Particle Swarm Optimization [<a href="#header">Top</a>]</h3>
                 <p>Particle Swarm Optimization (PSO) is a <a href="http://en.wikipedia.org/wiki/Metaheuristic">Metaheuristic</a> algorithm (similar to a genetic algorithm) which uses a model of a swarm of particles to find the minimum value of a given function. A great place to read about them is in the original paper</p>
 
                 <p>Kennedy, J.; Eberhart, R., "Particle swarm optimization," Neural Networks, 1995. Proceedings., IEEE International Conference on , vol.4, no., pp.1942,1948 vol.4, Nov/Dec 1995<br>
@@ -150,18 +216,9 @@
 
                 <p>I wrote this webpage to help me to update the algorithm to remove a bias towards a chosen basis of the underlying vector space (as well as to practice writing functional JavaScript). It is a work in progress.</p>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="modal" id="functionModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Optimization Function</h4>
-              </div>
-              <div class="modal-body">
+              <div class="modal" id="functionModal">
+                <h3>Optimization Function [<a href="#header">Top</a>]</h3>
                 <p>Select the function to be optimized. All functions are pulled from <a href="http://www.zsd.ict.pwr.wroc.pl/files/docs/functions.pdf">"Test functions for optimization needs"</a> by Marcin Molga and Czesław Smutnicki. Options are:</p>
                 <ol>
                   <li>De Jong's function:
@@ -172,18 +229,9 @@
                   $$f(x) = 20 + x^2 - 10 \cos(2 \pi x) + y^2 - 10 \cos(2 \pi y)$$</li>
                 </ol>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="modal" id="parametersModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Parameters</h4>
-              </div>
-              <div class="modal-body">
+              <div class="modal" id="parametersModal">
+                <h3>Parameters [<a href="#header">Top</a>]</h3>
                 <p>These are the parameters from the paper:</p>
 
                 <p>Bratton, D.; Kennedy, J., "Defining a Standard for Particle Swarm Optimization," Swarm Intelligence Symposium, 2007. SIS 2007. IEEE , vol., no., pp.120,127, 1-5 April 2007<br>
@@ -202,18 +250,9 @@
 
                 <p>The <emph>use "ball method"</emph> option is an experiment of my own devising. One of the commonly cited problems with particle swarm optimization is the fact that it is dependent on the orientation of a function to the axes. I've developed a new updating method which fixes this - however it does not yet perform satisfactorily. More tests need to be done.</p>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="modal" id="optionsModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Options</h4>
-              </div>
-              <div class="modal-body">
+              <div class="modal" id="optionsModal">
+                <h3>Options [<a href="#header">Top</a>]</h3>
                 <p>Several options are available:</p>
 
                 <ul>
@@ -228,7 +267,6 @@
           </div>
         </div>
       </div>
-    </div><!-- .container -->
 
-  </body>
-</html>
+    </body>
+  </html>

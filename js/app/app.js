@@ -72,13 +72,13 @@ define([
         $('#liveOptionsInput input').each(function() {
             config.liveOptions[$(this).val()] = $(this).prop('checked');
         });
-        console.log(config.liveOptions);
+        //console.log(config.liveOptions);
     };
 
     var readForm = function() {
         // Set all of the options
         // Set function
-        config.fun = $('select#functionSelect').val();
+        config.fun = $('input[name=functionSelect]:checked').val();
         // Set parameters
         $('#paramsInput input').each(function() { 
             config.params[$(this).prop('name')] = parseFloat($(this).val());
@@ -90,6 +90,7 @@ define([
         });
         // Set live options
         readLiveOptions();
+        console.log(config);
     };
 
     var resetForm = function(hardReset) {
@@ -103,7 +104,7 @@ define([
             $(this).val(config.params[$(this).prop('name')]);
         });
         if (hardReset) {
-            $('select#functionSelect').val(config.fun);
+            $('input[name=functionSelect][value="' + config.fun + '"]').attr('checked', 'checked');
             $('#optionsInput input').each(function() {
                 $(this).prop('checked', config.options[$(this).val()]);
             });
